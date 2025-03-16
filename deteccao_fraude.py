@@ -151,7 +151,8 @@ plt.legend(loc=4)
 
 #%%
 # Fast balanced database analysis using pandas_profiling
-#  OBS: pandas_profiling has been renamed to ydata_profiling you may need to update your code too!
+#  OBS: pandas_profiling has been renamed to ydata_profiling you may need
+# to update your code and re-install: pip install ydata-profiling
 from ydata_profiling import ProfileReport
 
 # If you want to generate the HTML file in a IDE you have to first generate the report and then create the html
@@ -349,3 +350,15 @@ from sklearn.metrics import ConfusionMatrixDisplay
 cm= confusion_matrix(y_test,y_pred)
 display = ConfusionMatrixDisplay(confusion_matrix=cm)
 display.plot()
+
+#%%
+# Plotting de ROC curve and gettting its AUC for the balanced model
+
+y_pred_prob = lr.predict_proba(x_test)[::,1]
+fpr,tpr,_ = metrics.roc_curve(y_test,y_pred_prob)
+auc = metrics.roc_auc_score(y_test,y_pred_prob)
+
+plt.rcParams['figure.figsize']=(12.,8.)
+plt.plot(fpr,tpr,label="RF_auc="+str(auc))
+plt.plot([0,1],[0,1],color='red',lw=2,linestyle='--')
+plt.legend(loc=4)
