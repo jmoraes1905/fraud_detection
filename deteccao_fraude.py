@@ -57,6 +57,8 @@ print("LR F1-score: ",metrics.f1_score(y_test, y_pred))
 
 # Lets evaluate the confusion matrix
 
+# We see that the true positive score is terrible, probably due to unbalanced data
+
 import matplotlib.pyplot as plt
 from sklearn.metrics import confusion_matrix
 from sklearn.metrics import ConfusionMatrixDisplay
@@ -64,5 +66,15 @@ from sklearn.metrics import ConfusionMatrixDisplay
 cm= confusion_matrix(y_test,y_pred)
 display = ConfusionMatrixDisplay(confusion_matrix=cm)
 display.plot()
+#%%
+# Plotting de ROC curve and gettting its AUC
+# The AUC metrics is alright despite the rest of the other metrics
+y_pred_prob = lr.predict_proba(x_test)[::,1]
+fpr,tpr,_ = metrics.roc_curve(y_test,y_pred_prob)
+auc = metrics.roc_auc_score(y_test,y_pred_prob)
 
-# We see that the true positive score is terrible, probably due to unbalanced data
+plt.rcParams['figure.figsize']=(12.,8.)
+plt.plot(fpr,tpr,label="LR,auc="+str(auc))
+plt.plot([0,1],[0,1],color='red',lw=2,linestyle='--')
+plt.legend(loc=4)
+#%%
