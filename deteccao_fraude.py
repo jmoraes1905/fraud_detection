@@ -74,7 +74,7 @@ fpr,tpr,_ = metrics.roc_curve(y_test,y_pred_prob)
 auc = metrics.roc_auc_score(y_test,y_pred_prob)
 
 plt.rcParams['figure.figsize']=(12.,8.)
-plt.plot(fpr,tpr,label="LR,auc="+str(auc))
+plt.plot(fpr,tpr,label="LR_auc="+str(auc))
 plt.plot([0,1],[0,1],color='red',lw=2,linestyle='--')
 plt.legend(loc=4)
 #%%
@@ -145,7 +145,7 @@ fpr,tpr,_ = metrics.roc_curve(y_test,y_pred_prob)
 auc = metrics.roc_auc_score(y_test,y_pred_prob)
 
 plt.rcParams['figure.figsize']=(12.,8.)
-plt.plot(fpr,tpr,label="LR,auc="+str(auc))
+plt.plot(fpr,tpr,label="LR_auc="+str(auc))
 plt.plot([0,1],[0,1],color='red',lw=2,linestyle='--')
 plt.legend(loc=4)
 
@@ -164,3 +164,119 @@ profile.to_file("balanced_profile_report.html")
 # We could have done the same for our unbalanced data in the begginning of the project... sorry
 
 # type_TRANSFER and step are highly correlated with isFraud
+#%%
+
+# Now lets compare the logistic regression with the decision tree
+
+from sklearn.tree import DecisionTreeClassifier
+
+dt = DecisionTreeClassifier(max_depth=5,random_state=42)
+
+tree = dt.fit(x_train,y_train)
+y_pred=dt.predict(x_test)
+#%%
+#Evaluating the decision tree model with balanced data
+
+from sklearn import metrics
+
+print("DT Accuracy: ",metrics.accuracy_score(y_test, y_pred))
+print("DT Precision: ",metrics.precision_score(y_test, y_pred))
+print("DT Recall: ",metrics.recall_score(y_test, y_pred))
+print("DT F1-score: ",metrics.f1_score(y_test, y_pred))
+
+# General accuracy is pretty good, but the oother metrics are not fine
+
+# Lets evaluate the confusion matrix
+
+# We see that the true positive score is terrible, probably due to unbalanced data
+
+import matplotlib.pyplot as plt
+from sklearn.metrics import confusion_matrix
+from sklearn.metrics import ConfusionMatrixDisplay
+
+cm= confusion_matrix(y_test,y_pred)
+display = ConfusionMatrixDisplay(confusion_matrix=cm)
+display.plot()
+
+#%%
+# Plotting de ROC curve and gettting its AUC for the balanced model
+
+y_pred_prob = lr.predict_proba(x_test)[::,1]
+fpr,tpr,_ = metrics.roc_curve(y_test,y_pred_prob)
+auc = metrics.roc_auc_score(y_test,y_pred_prob)
+
+plt.rcParams['figure.figsize']=(12.,8.)
+plt.plot(fpr,tpr,label="DT_auc="+str(auc))
+plt.plot([0,1],[0,1],color='red',lw=2,linestyle='--')
+plt.legend(loc=4)
+#%%
+
+# Now let's compare with the random forest model
+from sklearn.ensemble import RandomForestClassifier
+# I used the default value of 100 trees for trainning
+rf = RandomForestClassifier(max_depth=5, n_estimators=100, random_state=42)
+
+random_forest = rf.fit(x_train,y_train)
+y_pred=rf.predict(x_test)
+
+#%%
+#Evaluating the random forest model with balanced data
+
+from sklearn import metrics
+
+print("RF Accuracy: ",metrics.accuracy_score(y_test, y_pred))
+print("RF Precision: ",metrics.precision_score(y_test, y_pred))
+print("RF Recall: ",metrics.recall_score(y_test, y_pred))
+print("RF F1-score: ",metrics.f1_score(y_test, y_pred))
+
+# General accuracy is pretty good, but the oother metrics are not fine
+
+# Lets evaluate the confusion matrix
+
+# We see that the true positive score is terrible, probably due to unbalanced data
+
+import matplotlib.pyplot as plt
+from sklearn.metrics import confusion_matrix
+from sklearn.metrics import ConfusionMatrixDisplay
+
+cm= confusion_matrix(y_test,y_pred)
+display = ConfusionMatrixDisplay(confusion_matrix=cm)
+display.plot()
+
+#%%
+# Plotting de ROC curve and gettting its AUC for the balanced model
+
+y_pred_prob = lr.predict_proba(x_test)[::,1]
+fpr,tpr,_ = metrics.roc_curve(y_test,y_pred_prob)
+auc = metrics.roc_auc_score(y_test,y_pred_prob)
+
+plt.rcParams['figure.figsize']=(12.,8.)
+plt.plot(fpr,tpr,label="RF_auc="+str(auc))
+plt.plot([0,1],[0,1],color='red',lw=2,linestyle='--')
+plt.legend(loc=4)
+
+#%%
+
+# For better visualization, lets condensate the presentation of our results
+# We show the classifiers' metrics and confusion matrices
+classifiers = [
+    LogisticRegression(max_iter=300, random_state=42),
+    DecisionTreeClassifier(max_depth=5,random_state=42),
+    RandomForestClassifier(max_depth=5, n_estimators=100, random_state=42)]
+
+for clf in classifiers:
+    clf.fit(x_train,y_train)
+    name=clf.__class__.__name__
+    print("*"*50)
+    print(name)
+    print("****Results****")
+    y_pred=clf.predict(x_test)
+    
+    print("Accuracy: ",metrics.accuracy_score(y_test, y_pred))
+    print("Precision: ",metrics.precision_score(y_test, y_pred))
+    print("Recall: ",metrics.recall_score(y_test, y_pred))
+    print("F1-score: ",metrics.f1_score(y_test, y_pred))
+    
+    cm= confusion_matrix(y_test,y_pred)
+    display = ConfusionMatrixDisplay(confusion_matrix=cm)
+    display.plot()
