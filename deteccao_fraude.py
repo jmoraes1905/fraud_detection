@@ -78,8 +78,9 @@ plt.plot(fpr,tpr,label="LR_auc="+str(auc))
 plt.plot([0,1],[0,1],color='red',lw=2,linestyle='--')
 plt.legend(loc=4)
 #%%
-# Since we are dealing with unbalanced sinthetic data we shall use an oversampling technique to balance our database
-
+# Since we are dealing with unbalanced sinthetic data we shall use an
+# oversampling technique to balance our database
+# You may need to install this package: pip install imbalanced-learn
 from imblearn.over_sampling import  SMOTE
 import numpy as np
 
