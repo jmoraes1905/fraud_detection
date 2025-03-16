@@ -148,3 +148,19 @@ plt.rcParams['figure.figsize']=(12.,8.)
 plt.plot(fpr,tpr,label="LR,auc="+str(auc))
 plt.plot([0,1],[0,1],color='red',lw=2,linestyle='--')
 plt.legend(loc=4)
+
+#%%
+# Fast balanced database analysis using pandas_profiling
+#  OBS: pandas_profiling has been renamed to ydata_profiling you may need to update your code too!
+from ydata_profiling import ProfileReport
+
+# If you want to generate the HTML file in a IDE you have to first generate the report and then create the html
+# You won't have this issue if you're already using an online IDE
+profile=ProfileReport(df_balanced,title="Balanced Profile Report")
+
+#Create HTML file
+profile.to_file("balanced_profile_report.html")
+
+# We could have done the same for our unbalanced data in the begginning of the project... sorry
+
+# type_TRANSFER and step are highly correlated with isFraud
