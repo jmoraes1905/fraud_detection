@@ -280,3 +280,50 @@ for clf in classifiers:
     cm= confusion_matrix(y_test,y_pred)
     display = ConfusionMatrixDisplay(confusion_matrix=cm)
     display.plot()
+    
+# Since the random forest offers better results in general and more balanced
+# confusion matrix value distribution, we shall select it as our classifier
+#%%
+
+# We will optimize our model hiper-parameters so that we get the best possible 
+# model, particularly improving our recall result, which is currently worse
+# than our decision tree recall
+
+n_estimators = np.arange(20,200,step=20)
+criterion = ["gini","entropy"]
+max_features = ["auto","sqrt","log2"]
+max_depth=list(np.arange(2,10,step=1))
+min_samples_split = np.arange(2,10,step=2)
+min_samples_leaf=[1,2,4]
+bootstrap=[True,False]
+
+param_grid={
+    "n_estimators":n_estimators,
+    "criterion":criterion,
+    "max_features":max_features,
+    "max_depth":max_depth,
+    "min_samples_split":min_samples_split,
+    "min_samples_leaf":min_samples_leaf,
+    "bootstrap":bootstrap}
+
+# We use RandomizedSearchCV for optimization
+
+from sklearn.model_selection import RandomizedSearchCV
+
+random_forest = RandomForestClassifier(random_state=42)
+
+random_cv = RandomizedSearchCV(
+    random_forest, param_grid, n_iter=5, cv=3, scoring='recall',n_jobs=-1, random_state=42
+    )
+
+# It would be nice to know how long does it take to execute this... 
+rcv = random_cv.fit(x,y)
+
+#%%
+
+# Finally we check the five models chosen by the RSCV
+
+rcv_df=pd.DataFrame(rcv.cv_results_)
+rcv.best_params_
+
+#%%
