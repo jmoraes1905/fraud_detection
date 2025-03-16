@@ -327,3 +327,25 @@ rcv_df=pd.DataFrame(rcv.cv_results_)
 rcv.best_params_
 
 #%%
+random_forest = RandomForestClassifier(**rcv.best_params_,random_state=42)
+random_forest.fit(x_train,y_train)
+y_pred=random_forest.predict(x_test)
+
+print("RF Accuracy: ",metrics.accuracy_score(y_test, y_pred))
+print("RF Precision: ",metrics.precision_score(y_test, y_pred))
+print("RF Recall: ",metrics.recall_score(y_test, y_pred))
+print("RF F1-score: ",metrics.f1_score(y_test, y_pred))
+
+# General accuracy is pretty good, but the oother metrics are not fine
+
+# Lets evaluate the confusion matrix
+
+# We see that the true positive score is terrible, probably due to unbalanced data
+
+import matplotlib.pyplot as plt
+from sklearn.metrics import confusion_matrix
+from sklearn.metrics import ConfusionMatrixDisplay
+
+cm= confusion_matrix(y_test,y_pred)
+display = ConfusionMatrixDisplay(confusion_matrix=cm)
+display.plot()
